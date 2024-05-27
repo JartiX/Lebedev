@@ -4,12 +4,14 @@ using namespace std;
 #ifndef NODE_HPP
 # define NODE_HPP
 
-struct node {
-    int left, *right, suffix_index;
-    node* suffix_link;
-    unordered_map<char, node*> childs;
+struct Node {
+	int left;
+	int* right;
+	size_t suffix_index;
+	Node* suffix_link;
+	unordered_map<char, Node*> childs;
 
-    node(int left, int* right, node* suffix_link, int suffix_index);
+	Node(int left_, int* right_, Node* suffix_link_, int suffix_index_);
 };
 
 

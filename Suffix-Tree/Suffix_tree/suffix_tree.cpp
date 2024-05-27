@@ -1,139 +1,189 @@
 #include "suffix_tree.hpp"
-
 using namespace std;
 
+void Suffix_tree::delete_node(Node* node) {
+	// Рекурсивное удаление детей узла
+	for (pair<const char, Node*> i : node->childs) {
+		delete_node(i.second);
+	}
 
-int suffix_tree::suffix_length(node* node) const {
-    if (node == root) return 0;
-    return *node->right - node->left + 1;
+	// Если узел внутренний, удаляем и right
+	if (node->suffix_index == -1) { delete node->right; }
+
+	// Удаляем сам узел
+	delete node;
 }
 
-void suffix_tree::build(string data) {
-    root = new node(-1, nullptr, nullptr, -1);
+void Suffix_tree::update_tree(size_t index) {
+	last_node = nullptr;
+	remain++;
+	suffix_end++;
 
-    if (!root->childs.empty()) del(root);
-    line = data;
-    active_node = root;
+	// Будет выполняться до тех пор, пока все суффиксы не будут обработаны
+	while (remain > 0) {
+		if (current_length == 0) {
+			current_edge = index;
+		}
 
-    for (int i = 0; line[i] != '\0'; i++) {
-        update_tree(i);
-    }
-    update_tree(line.length());
+		// Ищем дочерний узел, начиная с символа на текущем ребре 
+		auto finded_child = current_node->childs.find(line[current_edge]);
+
+		// Если такой узел не нашелся
+		if (finded_child == current_node->childs.end()) {
+			// Создаем новый узел
+			Node* added_word = new Node(index, &suffix_end, root, index - remain + 1);
+
+			// Созданный узел добавляем в дочерние узлы текущего узла
+			current_node->childs[line[index]] = added_word;
+
+			// Обновляем ссылку предыдущего созданного узла, если она есть
+			if (last_node != nullptr) {
+				last_node->suffix_link = current_node;
+				last_node = nullptr;
+			}
+		}
+		// Если нашли дочерний узел
+		else {
+			Node* finded_node = finded_child->second;
+
+			// Спускаемся к узлу
+			if (current_length >= suffix_length(finded_node)) {
+				current_node = finded_node;
+				current_length -= suffix_length(finded_node);
+				current_edge += suffix_length(finded_node);
+				continue;
+			}
+
+			// Спускаемся по ребру
+			// Если символ совпал с символом на текущей длине
+			if (line[index] == line[finded_child->second->left + current_length]) {
+				// Обновляем ссылку предыдущего узла, если есть
+				if (last_node != nullptr && current_node != root) {
+					last_node->suffix_link = current_node;
+				}
+				current_length++;
+				break;
+			}
+
+			// Если символ не совпал, то разделяем ребро
+			Node* new_node = new Node(finded_node->left, new int(finded_node->left + current_length - 1), root, index - remain + 1);
+
+			if (last_node != nullptr) {
+				last_node->suffix_link = new_node;
+			}
+
+			// Обновляем текущий узел и его дочерние узлы
+			current_node->childs[line[current_edge]] = new_node;
+			finded_node->left += current_length;
+
+			new_node->childs[line[index]] = new Node(index, &suffix_end, root, index - remain + 1);
+			new_node->childs[line[finded_node->left]] = finded_node;
+			last_node = new_node;
+		}
+		// Обновляем переменные после обработки суффикса
+		remain--;
+
+		if (current_length > 0 && current_node == root) {
+			current_length--;
+			current_edge++;
+		}
+		else if (current_node != root) {
+			current_node = current_node->suffix_link;
+		}
+	}
 }
 
-void suffix_tree::del(node* node) {
-    for (auto i : node->childs) {
-        del(i.second);
-    }
-    if (node->suffix_index == -1) delete node->right;
-    delete node;
+int Suffix_tree::suffix_length(Node* node) const {
+	if (node == root) return 0;
+
+	return *node->right - node->left + 1;
 }
 
-void suffix_tree::update_tree(int index) {
 
-    last_created = nullptr;
-    remain++;
-    suffix_end++;
+int Suffix_tree::find(string prompt) {
+	// Если пустая строка для поиска, вернем 0
+	if (prompt.empty()) {
+		return 0;
+	}
 
-    while (remain != 0) {
-        // задаем активное ребро
-        if (active_length == 0) {
-            active_edge = index;
-        }
-        // ищем суффикс который начинается на данный символ
-        auto finded_child = active_node->childs.find(line[active_edge]);
+	// Начинаем проход с корня
+	Node* current_node = root;
+	size_t depth = 0;
+	int prompt_len = prompt.length();
 
-        // если нет суффикса который начинается на данный символ
-        if (finded_child == active_node->childs.end()) {
-            node* added_letter = new node(index, &suffix_end, root, index - remain + 1);
-            active_node->childs.insert(make_pair(line[index], added_letter));
-            if (last_created != nullptr) {
-                last_created->suffix_link = active_node;
-                last_created = nullptr;
-            }
-        }
-        else {
-            node* finded_node = finded_child->second;
+	while (depth < prompt.length()) {
+		auto finded_child = current_node->childs.find(prompt[depth]);
 
-            // если можем спуститься к ноде - спускаемся
-            if (active_length >= suffix_length(finded_node)) {
-                active_node = finded_node;
-                active_length -= suffix_length(finded_node);
-                active_edge += suffix_length(finded_node);
-                continue;
-            }
+		// Если сына с нужным символом нет, вернем -1
+		if (finded_child == current_node->childs.end()) {
+			return -1;
+		}
+		Node* finded_node = finded_child->second;
+		int node_len = suffix_length(finded_node);
 
-            //если можем спуститься по ребру - спускаемся
-            if (line[index] == line[finded_child->second->left + active_length]) {
-                if (last_created != nullptr && active_node != root) last_created->suffix_link = active_node;
-                active_length++;
-                break;
-            }
+		// Проверяем соответствие символов в найденном узле
+		for (size_t i = 0; i < node_len; i++) {
+			// Если достигли конца строки prompt, вернем индекс суффикса
+			if (depth + i >= prompt_len) {
+				return finded_node->suffix_index;
+			}
+			
+			// Если символы не совпали, вернем -1
+			if (prompt[depth + i] != line[finded_node->left + i]) {
+				return -1;
+			}
+		}
 
-            // деление ребра
-            node* new_node = new node(finded_node->left, new int(finded_node->left + active_length - 1), root, index - remain + 1);
-            
-            // создаем суффиксную ссылку
-            if (last_created != nullptr) last_created->suffix_link = new_node;
-            active_node->childs[line[active_edge]] = new_node;
-            finded_node->left += active_length;
-            new_node->childs.insert(make_pair(line[index], new node(index, &suffix_end, root, index - remain + 1)));
-            new_node->childs.insert(make_pair(line[finded_node->left], finded_node));
-            last_created = new_node;
-        }
-        remain--;
-
-        if (active_length > 0 && active_node == root) {
-            active_length--;
-            active_edge++;
-        }
-        else if (active_node != root) {
-            active_node = active_node->suffix_link;
-        }
-    }
+		// Переходим к следующему узлу
+		current_node = finded_node;
+		depth += node_len;
+	}
+	return current_node->suffix_index;
 }
 
-void suffix_tree::print(node* start, int lvl) {
-    // перебор нод
-    for (auto i : start->childs) {
-        if (i.first == '\0') continue;
-        for (int k = 0; k < lvl; k++) {
-            cout << "->";
-        }
+void Suffix_tree::build(string text) {
+	// Создаем корень
+	root = new Node(-1, nullptr, nullptr, -1);
+	
+	// Удаляем корень, если он уже был
+	if (!root->childs.empty()) { delete_node(root); }
 
-        // вывод суффикса
-        for (int j = i.second->left; j <= *(i.second->right); j++) {
-            cout << line[j];
-        }
-        cout << endl;
+	// Инициализировали текст и текущий узел
+	line = text;
+	current_node = root;
 
-        // спуск по детям
-        if (!(start->childs.empty())) {
-            print(i.second, lvl + 1);
-        }
-    }
+	// Добавляемм символы строки в суффиксное дерево
+	for (size_t i = 0; line[i] != '\0'; i++) {
+		update_tree(i);
+	}
+
+	// Обрабатываем конец строки
+	update_tree(line.length());
 }
 
-int suffix_tree::find(string text) {
-    if (text.empty()) return 0;
+void Suffix_tree::print(Node* start, int level) {
+	// Проходим по всем дочерним узлам текущего узла
+	for (pair<const char, Node*> mapa : start->childs) {
+		// Пропускаем символ, если это конец строки
+		if (mapa.first == '\0') {
+			continue;
+		}
 
-    node* current_node = root;
-    size_t depth = 0;
-    int text_length = text.length();
+		// Отступ для визуального представления глубины узла в дереве
+		for (int i = 0; i < level; i++) {
+			cout << "->";
+		}
 
-    while (depth < text.length()) {
-        auto finded_child = current_node->childs.find(text[depth]);
-        if (finded_child == current_node->childs.end()) return -1;
-        node* finded_node = finded_child->second;
-        int node_length = suffix_length(finded_node);
+		// Выводим все символы узла
+		for (int i = mapa.second->left; i <= *(mapa.second->right); i++) {
+			cout << line[i];
+		}
+		cout << endl;
 
-        for (int i = 0; i < node_length; i++) {
-            if (depth + i >= text_length) return finded_node->suffix_index;
-            if (text[depth + i] != line[finded_node->left + i]) return -1;
-        }
-
-        current_node = finded_node;
-        depth += node_length;
-    }
-    return current_node->suffix_index;
+		// Если текущий узел имеет дочерние узлы, то рекурсивно вызываем функцию
+		// для каждого дочернего узла, при этом увеличивая уровень
+		if (!(start->childs.empty())) {
+			print(mapa.second, level + 1);
+		}
+	}
 }

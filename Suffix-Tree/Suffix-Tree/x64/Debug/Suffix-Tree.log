@@ -1,2 +1,13 @@
-﻿  main.cpp
-  Suffix-Tree.vcxproj -> C:\Users\Witcher\Documents\GitHub\Lebedev\Suffix-Tree\x64\Debug\Suffix-Tree.exe
+﻿  suffix_tree.cpp
+C:\Users\artem\OneDrive\Desktop\Homeworks\экз\Suffix_tree\suffix_tree.cpp(25,19): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\artem\OneDrive\Desktop\Homeworks\экз\Suffix_tree\suffix_tree.cpp(34,73): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\artem\OneDrive\Desktop\Homeworks\экз\Suffix_tree\suffix_tree.cpp(34,32): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\artem\OneDrive\Desktop\Homeworks\экз\Suffix_tree\suffix_tree.cpp(69,119): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\artem\OneDrive\Desktop\Homeworks\экз\Suffix_tree\suffix_tree.cpp(79,86): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\artem\OneDrive\Desktop\Homeworks\экз\Suffix_tree\suffix_tree.cpp(79,45): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\artem\OneDrive\Desktop\Homeworks\экз\Suffix_tree\suffix_tree.cpp(112,17): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\artem\OneDrive\Desktop\Homeworks\экз\Suffix_tree\suffix_tree.cpp(128,23): warning C4267: return: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\artem\OneDrive\Desktop\Homeworks\экз\Suffix_tree\suffix_tree.cpp(141,21): warning C4267: return: преобразование из "size_t" в "int"; возможна потеря данных
+  main.cpp
+  Создание кода...
+  Suffix-Tree.vcxproj -> C:\Users\artem\OneDrive\Desktop\Homeworks\экз\x64\Debug\Suffix-Tree.exe

@@ -2,3 +2,11 @@
 *.vsidx
 /Suffix-Tree/.vs
 *.tlog
+*.log
+*.ilk
+*.obj
+*.obj
+*.exe
+Suffix-Tree/x64/Debug/Suffix-Tree.exe
+*.pdb
+*.pdb

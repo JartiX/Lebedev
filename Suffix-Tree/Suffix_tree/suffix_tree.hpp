@@ -5,25 +5,35 @@ using namespace std;
 #ifndef SUFFIX_TREE_HPP
 #define SUFFIX_TREE_HPP
 
-struct suffix_tree {
+class Suffix_tree {
 private:
-    string line;
-    node* active_node = nullptr;
-    int active_edge = -1;
-    int active_length = 0;
-    int remain = 0;
-    int suffix_end = -1;
+	string line;
+	Node* current_node = nullptr;
+	int current_edge = -1;
+	int current_length = 0;
+	int remain = 0;
+	int suffix_end = -1;
+	Node* last_node = nullptr;
 
-    node* last_created = nullptr;
-    void del(node* node);
-    void update_tree(int index);
-    int suffix_length(node* node) const;
+	// Удаление узла
+	void delete_node(Node* node);
+
+	// Обновление дерева
+	void update_tree(size_t index);
+
+	// Вычисление длины суффикса
+	int suffix_length(Node* node) const;
 
 public:
-    node* root;
+	Node* root;
 
-    void build(string data);
-    void print(node* start, int lvl);
-    int find(string text);
+	// Поиск строки в тексте
+	int find(string prompt);
+
+	// Построение суффиксного дерева
+	void build(string text);
+
+	// Вывод суффиксного дерева
+	void print(Node* start, int level);
 };
 #endif

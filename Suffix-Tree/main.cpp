@@ -5,7 +5,8 @@ using namespace std;
 
 
 int main() {
-    suffix_tree a;
+    setlocale(LC_ALL, "ru-RU");
+    Suffix_tree a;
 
     a.build("abcabxabcd"); // построение дерева
     cout << a.find("xab") << endl; // поиск подстроки. возвращает последнее вхождение

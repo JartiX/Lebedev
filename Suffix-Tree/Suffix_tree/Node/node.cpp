@@ -2,9 +2,9 @@
 using namespace std;
 
 
-node::node(int left, int* right, node* suffix_link, int suffix_index) {
-    this->left = left;
-    this->right = right;
-    this->suffix_link = suffix_link;
-    this->suffix_index = suffix_index;
+Node::Node(int left_, int* right_, Node* suffix_link_, int suffix_index_) {
+	left = left_;
+	right = right_;
+	suffix_index = suffix_index_;
+	suffix_link = suffix_link_;
 }
