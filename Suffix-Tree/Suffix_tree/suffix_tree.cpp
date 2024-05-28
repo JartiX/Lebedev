@@ -1,17 +1,58 @@
-#include "suffix_tree.hpp"
+п»ї#include "suffix_tree.hpp"
 using namespace std;
 
 void Suffix_tree::delete_node(Node* node) {
-	// Рекурсивное удаление детей узла
+	// Р РµРєСѓСЂСЃРёРІРЅРѕРµ СѓРґР°Р»РµРЅРёРµ РґРµС‚РµР№ СѓР·Р»Р°
 	for (pair<const char, Node*> i : node->childs) {
 		delete_node(i.second);
 	}
 
-	// Если узел внутренний, удаляем и right
+	// Р•СЃР»Рё СѓР·РµР» РІРЅСѓС‚СЂРµРЅРЅРёР№, СѓРґР°Р»СЏРµРј Рё right
 	if (node->suffix_index == -1) { delete node->right; }
 
-	// Удаляем сам узел
+	// РЈРґР°Р»СЏРµРј СЃР°Рј СѓР·РµР»
 	delete node;
+}
+
+Node* Suffix_tree::find_node(string substring) {
+	// Р•СЃР»Рё РїРѕРґСЃС‚СЂРѕРєР° РїСѓСЃС‚Р°СЏ, РІРµСЂРЅРµРј nullptr
+	if (substring.empty()) {
+		return nullptr;
+	}
+
+	Node* current_node = root;
+	size_t depth = 0;
+	size_t substring_len = substring.length();
+
+	// РџРѕРєР° РЅРµ РїСЂРѕР№РґРµРј РїРѕ РєР°Р¶РґРѕРјСѓ СЃРёРјРІРѕР»Сѓ РїРѕРґСЃС‚СЂРѕРєРё
+	while (depth < substring_len) {
+		auto finded_child = current_node->childs.find(substring[depth]);
+
+		// Р•СЃР»Рё РЅРµ РЅР°С€Р»Рё С‚Р°РєРѕР№ СѓР·РµР», РІРµСЂРЅРµРј nullptr
+		if (finded_child == current_node->childs.end()) {
+			return nullptr;
+		}
+
+		Node* finded_node = finded_child->second;
+		int node_len = suffix_length(finded_node);
+
+		// РџСЂРѕРІРµСЂСЏРµРј СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ СЃРёРјРІРѕР»РѕРІ РІ РЅР°Р№РґРµРЅРЅРѕРј СѓР·Р»Рµ
+		for (size_t i = 0; i < node_len; i++) {
+			// Р•СЃР»Рё РїСЂРѕС€Р»Рё РїРѕ РІСЃРµР№ РґР»РёРЅРµ, РІРµСЂРЅРµРј СѓР·РµР»
+			if (depth + i >= substring_len) {
+				return finded_node;
+			}
+			// Р•СЃР»Рё СЃРёРјРІРѕР»С‹ РЅРµ СЃРѕРІРїР°Р»Рё, Р·РЅР°С‡РёС‚РЅСѓР¶РЅРѕРіРѕ СѓР·Р»Р° РЅРµС‚
+			if (substring[depth + i] != line[finded_node->left + i]) {
+				return nullptr;
+			}
+		}
+
+		// РџРµСЂРµС…РѕРґРёРј Рє СЃР»РµРґСѓСЋС‰РµРјСѓ СѓР·Р»Сѓ
+		current_node = finded_node;
+		depth += node_len;
+	}
+	return current_node;
 }
 
 void Suffix_tree::update_tree(size_t index) {
@@ -19,34 +60,34 @@ void Suffix_tree::update_tree(size_t index) {
 	remain++;
 	suffix_end++;
 
-	// Будет выполняться до тех пор, пока все суффиксы не будут обработаны
+	// Р‘СѓРґРµС‚ РІС‹РїРѕР»РЅСЏС‚СЊСЃСЏ РґРѕ С‚РµС… РїРѕСЂ, РїРѕРєР° РІСЃРµ СЃСѓС„С„РёРєСЃС‹ РЅРµ Р±СѓРґСѓС‚ РѕР±СЂР°Р±РѕС‚Р°РЅС‹
 	while (remain > 0) {
 		if (current_length == 0) {
 			current_edge = index;
 		}
 
-		// Ищем дочерний узел, начиная с символа на текущем ребре 
+		// РС‰РµРј РґРѕС‡РµСЂРЅРёР№ СѓР·РµР», РЅР°С‡РёРЅР°СЏ СЃ СЃРёРјРІРѕР»Р° РЅР° С‚РµРєСѓС‰РµРј СЂРµР±СЂРµ 
 		auto finded_child = current_node->childs.find(line[current_edge]);
 
-		// Если такой узел не нашелся
+		// Р•СЃР»Рё С‚Р°РєРѕР№ СѓР·РµР» РЅРµ РЅР°С€РµР»СЃСЏ
 		if (finded_child == current_node->childs.end()) {
-			// Создаем новый узел
+			// РЎРѕР·РґР°РµРј РЅРѕРІС‹Р№ СѓР·РµР»
 			Node* added_word = new Node(index, &suffix_end, root, index - remain + 1);
 
-			// Созданный узел добавляем в дочерние узлы текущего узла
+			// РЎРѕР·РґР°РЅРЅС‹Р№ СѓР·РµР» РґРѕР±Р°РІР»СЏРµРј РІ РґРѕС‡РµСЂРЅРёРµ СѓР·Р»С‹ С‚РµРєСѓС‰РµРіРѕ СѓР·Р»Р°
 			current_node->childs[line[index]] = added_word;
 
-			// Обновляем ссылку предыдущего созданного узла, если она есть
+			// РћР±РЅРѕРІР»СЏРµРј СЃСЃС‹Р»РєСѓ РїСЂРµРґС‹РґСѓС‰РµРіРѕ СЃРѕР·РґР°РЅРЅРѕРіРѕ СѓР·Р»Р°, РµСЃР»Рё РѕРЅР° РµСЃС‚СЊ
 			if (last_node != nullptr) {
 				last_node->suffix_link = current_node;
 				last_node = nullptr;
 			}
 		}
-		// Если нашли дочерний узел
+		// Р•СЃР»Рё РЅР°С€Р»Рё РґРѕС‡РµСЂРЅРёР№ СѓР·РµР»
 		else {
 			Node* finded_node = finded_child->second;
 
-			// Спускаемся к узлу
+			// РЎРїСѓСЃРєР°РµРјСЃСЏ Рє СѓР·Р»Сѓ
 			if (current_length >= suffix_length(finded_node)) {
 				current_node = finded_node;
 				current_length -= suffix_length(finded_node);
@@ -54,10 +95,10 @@ void Suffix_tree::update_tree(size_t index) {
 				continue;
 			}
 
-			// Спускаемся по ребру
-			// Если символ совпал с символом на текущей длине
+			// РЎРїСѓСЃРєР°РµРјСЃСЏ РїРѕ СЂРµР±СЂСѓ
+			// Р•СЃР»Рё СЃРёРјРІРѕР» СЃРѕРІРїР°Р» СЃ СЃРёРјРІРѕР»РѕРј РЅР° С‚РµРєСѓС‰РµР№ РґР»РёРЅРµ
 			if (line[index] == line[finded_child->second->left + current_length]) {
-				// Обновляем ссылку предыдущего узла, если есть
+				// РћР±РЅРѕРІР»СЏРµРј СЃСЃС‹Р»РєСѓ РїСЂРµРґС‹РґСѓС‰РµРіРѕ СѓР·Р»Р°, РµСЃР»Рё РµСЃС‚СЊ
 				if (last_node != nullptr && current_node != root) {
 					last_node->suffix_link = current_node;
 				}
@@ -65,14 +106,14 @@ void Suffix_tree::update_tree(size_t index) {
 				break;
 			}
 
-			// Если символ не совпал, то разделяем ребро
+			// Р•СЃР»Рё СЃРёРјРІРѕР» РЅРµ СЃРѕРІРїР°Р», С‚Рѕ СЂР°Р·РґРµР»СЏРµРј СЂРµР±СЂРѕ
 			Node* new_node = new Node(finded_node->left, new int(finded_node->left + current_length - 1), root, index - remain + 1);
 
 			if (last_node != nullptr) {
 				last_node->suffix_link = new_node;
 			}
 
-			// Обновляем текущий узел и его дочерние узлы
+			// РћР±РЅРѕРІР»СЏРµРј С‚РµРєСѓС‰РёР№ СѓР·РµР» Рё РµРіРѕ РґРѕС‡РµСЂРЅРёРµ СѓР·Р»С‹
 			current_node->childs[line[current_edge]] = new_node;
 			finded_node->left += current_length;
 
@@ -80,7 +121,7 @@ void Suffix_tree::update_tree(size_t index) {
 			new_node->childs[line[finded_node->left]] = finded_node;
 			last_node = new_node;
 		}
-		// Обновляем переменные после обработки суффикса
+		// РћР±РЅРѕРІР»СЏРµРј РїРµСЂРµРјРµРЅРЅС‹Рµ РїРѕСЃР»Рµ РѕР±СЂР°Р±РѕС‚РєРё СЃСѓС„С„РёРєСЃР°
 		remain--;
 
 		if (current_length > 0 && current_node == root) {
@@ -99,91 +140,140 @@ int Suffix_tree::suffix_length(Node* node) const {
 	return *node->right - node->left + 1;
 }
 
+void Suffix_tree::collect_suffixes(Node* node, vector<string>& suffixes) const {
+	if (node == nullptr) return;
+
+	if (node->suffix_index != -1) {
+		suffixes.push_back(line.substr(node->suffix_index));
+	}
+
+	for (auto& child : node->childs) {
+		collect_suffixes(child.second, suffixes);
+	}
+}
+
+int Suffix_tree::cnt_leaf_nodes(Node* node) {
+	// Р•СЃР»Рё РґРµС‚РµР№ РЅРµС‚, С‚Рѕ СЌС‚Рѕ Р»РёСЃС‚
+	if (node->childs.empty()) {
+		return 1;
+	}
+
+	int count = 0;
+	// РџСЂРѕС…РѕРґРёРј РїРѕ РєР°Р¶РґРѕРјСѓ СЃС‹РЅСѓ Рё СЂРµРєСѓСЂСЃРёРІРЅРѕ СЃС‡РёС‚Р°РµРј Р»РёСЃС‚СЊСЏ
+	for (auto& child : node->childs) {
+		count += cnt_leaf_nodes(child.second);
+	}
+
+	return count;
+}
 
 int Suffix_tree::find(string prompt) {
-	// Если пустая строка для поиска, вернем 0
+	// Р•СЃР»Рё РїСѓСЃС‚Р°СЏ СЃС‚СЂРѕРєР° РґР»СЏ РїРѕРёСЃРєР°, РІРµСЂРЅРµРј 0
 	if (prompt.empty()) {
 		return 0;
 	}
 
-	// Начинаем проход с корня
-	Node* current_node = root;
-	size_t depth = 0;
-	int prompt_len = prompt.length();
+	// РС‰РµРј РЅРѕРґСѓ
+	Node* node = find_node(prompt);
 
-	while (depth < prompt.length()) {
-		auto finded_child = current_node->childs.find(prompt[depth]);
-
-		// Если сына с нужным символом нет, вернем -1
-		if (finded_child == current_node->childs.end()) {
-			return -1;
-		}
-		Node* finded_node = finded_child->second;
-		int node_len = suffix_length(finded_node);
-
-		// Проверяем соответствие символов в найденном узле
-		for (size_t i = 0; i < node_len; i++) {
-			// Если достигли конца строки prompt, вернем индекс суффикса
-			if (depth + i >= prompt_len) {
-				return finded_node->suffix_index;
-			}
-			
-			// Если символы не совпали, вернем -1
-			if (prompt[depth + i] != line[finded_node->left + i]) {
-				return -1;
-			}
-		}
-
-		// Переходим к следующему узлу
-		current_node = finded_node;
-		depth += node_len;
+	// Р•СЃР»Рё nullptr Р·РЅР°С‡РёС‚ РІС…РѕР¶РґРµРЅРёР№ СЃС‚СЂРѕРєРё РЅРµС‚
+	if (node == nullptr) {
+		return -1;
 	}
-	return current_node->suffix_index;
+
+	// Р’РµСЂРЅРµРј РёРЅРґРµРєСЃ РЅР°Р№РґРµРЅРЅРѕР№ РЅРѕРґС‹
+	return node->suffix_index;
+}
+
+int Suffix_tree::count_substring_entry(string substring) {
+	// РќР°С…РѕРґРёРј СѓР·РµР» СЃ РґР°РЅРЅРѕР№ РїРѕРґСЃС‚СЂРѕРєРѕР№
+	Node* node = find_node(substring);
+
+	// Р•СЃР»Рё СѓР·РµР» nullptr, Р·РЅР°С‡РёС‚ РІС…РѕР¶РґРµРЅРёР№ РїРѕРґСЃС‚СЂРѕРєРё 0
+	if (node == nullptr) {
+		return 0;
+	}
+
+	// РЎС‡РёС‚Р°РµРј РІСЃРµ СѓР·Р»С‹ РёР· РЅР°Р№РґРµРЅРЅРѕРіРѕ
+	return cnt_leaf_nodes(node);
 }
 
 void Suffix_tree::build(string text) {
-	// Создаем корень
+	// РЎРѕР·РґР°РµРј РєРѕСЂРµРЅСЊ
 	root = new Node(-1, nullptr, nullptr, -1);
 	
-	// Удаляем корень, если он уже был
+	// РЈРґР°Р»СЏРµРј РєРѕСЂРµРЅСЊ, РµСЃР»Рё РѕРЅ СѓР¶Рµ Р±С‹Р»
 	if (!root->childs.empty()) { delete_node(root); }
 
-	// Инициализировали текст и текущий узел
+	// РРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°Р»Рё С‚РµРєСЃС‚ Рё С‚РµРєСѓС‰РёР№ СѓР·РµР»
 	line = text;
 	current_node = root;
 
-	// Добавляемм символы строки в суффиксное дерево
+	// Р”РѕР±Р°РІР»СЏРµРјРј СЃРёРјРІРѕР»С‹ СЃС‚СЂРѕРєРё РІ СЃСѓС„С„РёРєСЃРЅРѕРµ РґРµСЂРµРІРѕ
 	for (size_t i = 0; line[i] != '\0'; i++) {
 		update_tree(i);
 	}
 
-	// Обрабатываем конец строки
+	// РћР±СЂР°Р±Р°С‚С‹РІР°РµРј РєРѕРЅРµС† СЃС‚СЂРѕРєРё
 	update_tree(line.length());
 }
 
 void Suffix_tree::print(Node* start, int level) {
-	// Проходим по всем дочерним узлам текущего узла
+	// РџСЂРѕС…РѕРґРёРј РїРѕ РІСЃРµРј РґРѕС‡РµСЂРЅРёРј СѓР·Р»Р°Рј С‚РµРєСѓС‰РµРіРѕ СѓР·Р»Р°
 	for (pair<const char, Node*> mapa : start->childs) {
-		// Пропускаем символ, если это конец строки
+		// РџСЂРѕРїСѓСЃРєР°РµРј СЃРёРјРІРѕР», РµСЃР»Рё СЌС‚Рѕ РєРѕРЅРµС† СЃС‚СЂРѕРєРё
 		if (mapa.first == '\0') {
 			continue;
 		}
 
-		// Отступ для визуального представления глубины узла в дереве
+		// РћС‚СЃС‚СѓРї РґР»СЏ РІРёР·СѓР°Р»СЊРЅРѕРіРѕ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РіР»СѓР±РёРЅС‹ СѓР·Р»Р° РІ РґРµСЂРµРІРµ
 		for (int i = 0; i < level; i++) {
 			cout << "->";
 		}
 
-		// Выводим все символы узла
+		// Р’С‹РІРѕРґРёРј РІСЃРµ СЃРёРјРІРѕР»С‹ СѓР·Р»Р°
 		for (int i = mapa.second->left; i <= *(mapa.second->right); i++) {
 			cout << line[i];
 		}
 		cout << endl;
 
-		// Если текущий узел имеет дочерние узлы, то рекурсивно вызываем функцию
-		// для каждого дочернего узла, при этом увеличивая уровень
+		// Р•СЃР»Рё С‚РµРєСѓС‰РёР№ СѓР·РµР» РёРјРµРµС‚ РґРѕС‡РµСЂРЅРёРµ СѓР·Р»С‹, С‚Рѕ СЂРµРєСѓСЂСЃРёРІРЅРѕ РІС‹Р·С‹РІР°РµРј С„СѓРЅРєС†РёСЋ
+		// РґР»СЏ РєР°Р¶РґРѕРіРѕ РґРѕС‡РµСЂРЅРµРіРѕ СѓР·Р»Р°, РїСЂРё СЌС‚РѕРј СѓРІРµР»РёС‡РёРІР°СЏ СѓСЂРѕРІРµРЅСЊ
 		if (!(start->childs.empty())) {
 			print(mapa.second, level + 1);
 		}
 	}
+}
+
+vector<string> Suffix_tree::get_all_suffixes() const {
+	vector<string> suffixes;
+	collect_suffixes(root, suffixes);
+
+	return suffixes;
+}
+
+bool Suffix_tree::is_contain(const string& substring) {
+	return find_node(substring) != nullptr;
+}
+
+double Suffix_tree::operator ==(Suffix_tree& tree) const {
+	// РџРѕР»СѓС‡Р°РµРј РІСЃРµ СЃСѓС„С„РёРєСЃС‹ С‚РµРєСѓС‰РµРіРѕ РґРµСЂРµРІР°
+	vector<string> suffixes1 = get_all_suffixes();
+	// РџРѕР»СѓС‡Р°РµРј РІСЃРµ СЃСѓС„С„РёРєСЃС‹ СЃСЂР°РІРЅРёРІР°РµРјРѕРіРѕ РґРµСЂРµРІР°
+	vector<string> suffixes2 = tree.get_all_suffixes();
+
+	// РќР°С…РѕРґРёРј РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРѕРІРїР°РґР°СЋС‰РёС… СЃСѓС„С„РёРєСЃРѕРІ
+	size_t matching_suffixes = 0;
+	for (const auto& suffix1 : suffixes1) {
+		for (const auto& suffix2 : suffixes2) {
+			if (suffix1 == suffix2) {
+				matching_suffixes++;
+				break;
+			}
+		}
+	}
+
+	// РћРїСЂРµРґРµР»СЏРµРј РїСЂРѕС†РµРЅС‚ СЃРѕРІРїР°РґРµРЅРёСЏ
+	double percentage = static_cast<double>(matching_suffixes) / max(suffixes1.size(), suffixes2.size()) * 100.0;
+	return percentage;
 }

@@ -1,5 +1,8 @@
-#include <iostream>
+﻿#include <iostream>
 #include "Node/node.hpp"
+#include <set>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
 #ifndef SUFFIX_TREE_HPP
@@ -15,25 +18,45 @@ private:
 	int suffix_end = -1;
 	Node* last_node = nullptr;
 
-	// �������� ����
+	// Удаление узла
 	void delete_node(Node* node);
 
-	// ���������� ������
+	// Поиск узла
+	Node* find_node(string substring);
+
+	// Обновление дерева
 	void update_tree(size_t index);
 
-	// ���������� ����� ��������
+	// Вычисление длины суффикса
 	int suffix_length(Node* node) const;
+
+	// Собрать все суффиксы из узлов с использованием рекурсии
+	void collect_suffixes(Node* node, vector<string>& suffixes) const;
+
+	// Подсчет листовых узлов
+	int cnt_leaf_nodes(Node* node);
 
 public:
 	Node* root;
 
-	// ����� ������ � ������
+	// Поиск строки в тексте
 	int find(string prompt);
 
-	// ���������� ����������� ������
+	// Количество вхождений строки
+	int count_substring_entry(string substring);
+
+	// Построение суффиксного дерева
 	void build(string text);
 
-	// ����� ����������� ������
+	// Вывод суффиксного дерева
 	void print(Node* start, int level);
+
+	// Получение всех суффиксов
+	vector<string> get_all_suffixes() const;
+
+	// Проверка наличия подстроки в дереве
+	bool is_contain(const string& substring);
+
+	double operator ==(Suffix_tree& tree) const;
 };
 #endif

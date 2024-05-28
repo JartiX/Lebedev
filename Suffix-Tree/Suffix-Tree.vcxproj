@@ -135,6 +135,10 @@
     <ClInclude Include="Suffix_tree\Node\node.hpp" />
     <ClInclude Include="Suffix_tree\suffix_tree.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
