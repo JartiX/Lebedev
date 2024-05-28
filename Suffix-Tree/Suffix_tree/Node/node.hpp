@@ -12,6 +12,9 @@ struct Node {
 	unordered_map<char, Node*> childs;
 
 	Node(int left_, int* right_, Node* suffix_link_, int suffix_index_);
+
+	// Удаление узла
+	void delete_node();
 };
 
 

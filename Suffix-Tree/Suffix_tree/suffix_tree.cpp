@@ -1,18 +1,14 @@
 ﻿#include "suffix_tree.hpp"
 using namespace std;
 
-void Suffix_tree::delete_node(Node* node) {
-	// Рекурсивное удаление детей узла
-	for (pair<const char, Node*> i : node->childs) {
-		delete_node(i.second);
-	}
-
-	// Если узел внутренний, удаляем и right
-	if (node->suffix_index == -1) { delete node->right; }
-
-	// Удаляем сам узел
-	delete node;
+Suffix_tree::Suffix_tree(string text) {
+	build(text);
 }
+
+Node* Suffix_tree::Get_root() {
+	return root;
+}
+
 
 Node* Suffix_tree::find_node(string substring) {
 	// Если подстрока пустая, вернем nullptr
@@ -199,11 +195,12 @@ int Suffix_tree::count_substring_entry(string substring) {
 }
 
 void Suffix_tree::build(string text) {
-	// Создаем корень
-	root = new Node(-1, nullptr, nullptr, -1);
-	
-	// Удаляем корень, если он уже был
-	if (!root->childs.empty()) { delete_node(root); }
+	// Удаляем корень, если он уже был и создаем новый
+	if (!root->childs.empty()) { 
+		root->delete_node(); 
+		suffix_end = -1;
+		root = new Node(-1, nullptr, nullptr, -1);
+	}
 
 	// Инициализировали текст и текущий узел
 	line = text;
@@ -274,6 +271,13 @@ double Suffix_tree::operator ==(Suffix_tree& tree) const {
 	}
 
 	// Определяем процент совпадения
-	double percentage = static_cast<double>(matching_suffixes) / max(suffixes1.size(), suffixes2.size()) * 100.0;
+	double percentage = (double)(matching_suffixes) / max(suffixes1.size(), suffixes2.size()) * 100.0;
 	return percentage;
+}
+
+istream& operator>>(istream& in, Suffix_tree& tree) {
+	in >> tree.line;
+	tree.build(tree.line);
+
+	return in;
 }

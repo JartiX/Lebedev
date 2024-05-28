@@ -1,2 +1,11 @@
-﻿  main.cpp
-  Suffix-Tree.vcxproj -> C:\Users\artem\OneDrive\Документы\GitHub\Lebedev\Suffix-Tree\x64\Debug\Suffix-Tree.exe
+﻿  suffix_tree.cpp
+C:\Users\Witcher\Documents\GitHub\Lebedev\Suffix-Tree\Suffix_tree\suffix_tree.cpp(62,19): warning C4267: =: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Witcher\Documents\GitHub\Lebedev\Suffix-Tree\Suffix_tree\suffix_tree.cpp(71,73): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Witcher\Documents\GitHub\Lebedev\Suffix-Tree\Suffix_tree\suffix_tree.cpp(71,32): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Witcher\Documents\GitHub\Lebedev\Suffix-Tree\Suffix_tree\suffix_tree.cpp(106,119): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Witcher\Documents\GitHub\Lebedev\Suffix-Tree\Suffix_tree\suffix_tree.cpp(116,86): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Witcher\Documents\GitHub\Lebedev\Suffix-Tree\Suffix_tree\suffix_tree.cpp(116,45): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\Witcher\Documents\GitHub\Lebedev\Suffix-Tree\Suffix_tree\suffix_tree.cpp(181,13): warning C4267: return: преобразование из "size_t" в "int"; возможна потеря данных
+  main.cpp
+  Создание кода...
+  Suffix-Tree.vcxproj -> C:\Users\Witcher\Documents\GitHub\Lebedev\Suffix-Tree\x64\Debug\Suffix-Tree.exe
