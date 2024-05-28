@@ -12,7 +12,7 @@ int main() {
     cout << "A:" << endl;
     a.print(a.root, 0); // вывод дерева
     cout << endl;
-    cout << "Последнее вхождение bc в a: " << a.find("bc") << endl; // поиск подстроки. возвращает последнее вхождение
+    cout << "Last entry index of {bc} in a: " << a.find("bc") << endl; // поиск подстроки. возвращает последнее вхождение
     cout << endl;
 
     Suffix_tree b;
@@ -31,6 +31,10 @@ int main() {
     cout << endl;
 
     cout << endl << "A and C similarity: " << (a == c) << "%" << endl;
+
+    cout << "Number of entries of line {ab} in a: " << a.count_substring_entry("ab") << " times" << endl;
+
+    cout << "Is entry {cabx} in a: " << a.is_contain("cabx") << endl;
 
     return 0;
 }
