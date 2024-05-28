@@ -63,5 +63,7 @@ public:
 
 	double operator ==(Suffix_tree& tree) const;
 	friend istream& operator>>(istream& in, Suffix_tree& tree);
+
+	~Suffix_tree();
 };
 #endif

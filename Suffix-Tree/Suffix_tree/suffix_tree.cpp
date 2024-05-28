@@ -281,3 +281,7 @@ istream& operator>>(istream& in, Suffix_tree& tree) {
 
 	return in;
 }
+
+Suffix_tree::~Suffix_tree() {
+	delete root;
+}
