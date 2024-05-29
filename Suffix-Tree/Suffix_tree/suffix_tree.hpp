@@ -21,7 +21,7 @@ private:
 	Node* last_node = nullptr;
 
 	// Поиск узла
-	Node* find_node(string substring);
+	Node* find_node(string substring) const;
 
 	// Обновление дерева
 	void update_tree(size_t index);
@@ -59,11 +59,12 @@ public:
 	vector<string> get_all_suffixes() const;
 
 	// Проверка наличия подстроки в дереве
-	bool is_contain(const string& substring);
+	bool is_contain(const string& substring) const;
 
 	double operator ==(Suffix_tree& tree) const;
 	friend istream& operator>>(istream& in, Suffix_tree& tree);
 
 	~Suffix_tree();
 };
+
 #endif

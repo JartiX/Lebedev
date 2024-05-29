@@ -10,7 +10,7 @@ Node* Suffix_tree::Get_root() {
 }
 
 
-Node* Suffix_tree::find_node(string substring) {
+Node* Suffix_tree::find_node(string substring) const {
 	// Если подстрока пустая, вернем nullptr
 	if (substring.empty()) {
 		return nullptr;
@@ -249,31 +249,37 @@ vector<string> Suffix_tree::get_all_suffixes() const {
 	return suffixes;
 }
 
-bool Suffix_tree::is_contain(const string& substring) {
+bool Suffix_tree::is_contain(const string& substring) const {
 	return find_node(substring) != nullptr;
 }
 
 double Suffix_tree::operator ==(Suffix_tree& tree) const {
-	// Получаем все суффиксы текущего дерева
-	vector<string> suffixes1 = get_all_suffixes();
+	//// Находим количество совпадений
+	//int matching = 0;
+	//for (size_t i = 0; i < tree.line.size();++i) {
+	//	for (size_t j = i + 1; j < tree.line.size();++j) {
+	//		string substr = tree.line.substr(i, j - 1);
+	//		if (is_contain(substr)) {
+	//			matching++;
+	//		}
+	//	}
+	//}
+
 	// Получаем все суффиксы сравниваемого дерева
 	vector<string> suffixes2 = tree.get_all_suffixes();
 
-	// Находим количество совпадающих суффиксов
-	size_t matching_suffixes = 0;
-	for (const auto& suffix1 : suffixes1) {
-		for (const auto& suffix2 : suffixes2) {
-			if (suffix1 == suffix2) {
-				matching_suffixes++;
-				break;
-			}
+	int matching = 0;
+	for (const auto& suffix2 : suffixes2) {
+		if (is_contain(suffix2)) {
+			matching++;
 		}
 	}
 
 	// Определяем процент совпадения
-	double percentage = (double)(matching_suffixes) / max(suffixes1.size(), suffixes2.size()) * 100.0;
+	double percentage = 2.0*double(matching) / ((tree.line.size() + line.size())) * 100;
 	return percentage;
 }
+
 
 istream& operator>>(istream& in, Suffix_tree& tree) {
 	in >> tree.line;

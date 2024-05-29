@@ -1,6 +1,7 @@
 ﻿#include <iostream>
+#include <vector>
 #include "Suffix_tree/suffix_tree.hpp"
-
+#include "Suffix_tree/Texts_comparisor/comparisor.hpp"
 using namespace std;
 
 
@@ -22,12 +23,14 @@ int main() {
     cout << endl;
 
     Suffix_tree b;
-    b.build("9283xabcd");
+    b.build("12345xa6cd");
     cout << "B:" << endl;
     b.print(b.Get_root(), 0);
     cout << endl;
 
     cout << endl << "A and B similarity: " << (a == b) << "%" << endl;
+
+
     cout << endl;
 
     Suffix_tree c;
@@ -54,6 +57,24 @@ int main() {
     cout << "Enter string: ";
     cin >> kk;
     kk.print(kk.Get_root(), 0);
+
+    vector<string> texts = {
+    "9283xabcd",
+    "7777bxabcd",
+    "abcabxabcd",
+    "text for comparison",
+    "comparing texts example",
+    "suffix trees 124s",
+    "another text for comparison",
+    "similarity check example",
+    "finding similar texts",
+    "last examssss txts",
+    "7777bxa the best"
+    };
+
+    pair<int, int> most_similar_texts = find_most_similar(texts);
+
+    cout << "Most similar texts: " << most_similar_texts.first << " " << most_similar_texts.second << endl;
 
     return 0;
 }

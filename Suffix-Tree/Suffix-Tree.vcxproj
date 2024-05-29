@@ -130,10 +130,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Suffix_tree\Node\node.cpp" />
     <ClCompile Include="Suffix_tree\suffix_tree.cpp" />
+    <ClCompile Include="Suffix_tree\Texts_comparisor\comparisor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Suffix_tree\Node\node.hpp" />
     <ClInclude Include="Suffix_tree\suffix_tree.hpp" />
+    <ClInclude Include="Suffix_tree\Texts_comparisor\comparisor.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
